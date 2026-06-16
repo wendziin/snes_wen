@@ -32,24 +32,21 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y cmake ninja-build pkg-config
 
-      - name: Fetch Pre-compiled libcurl & OpenSSL for Android
+      - name: Clone libcurl-android-ios
+        run: git clone https://github.com/mpx/curl-android-ios.git curl-repo
+
+      - name: Prepare libcurl & OpenSSL libs
         run: |
           mkdir -p $HOME/imagine-sdk/android-libs
           mkdir -p $HOME/imagine-sdk/include
-          # Baixando o repositório mpx/curl-android-ios como fonte das libs
-          curl -L https://github.com/mpx/curl-android-ios/archive/refs/heads/master.tar.gz -o curl-repo.tar.gz
-          tar -xzf curl-repo.tar.gz
-          
           # Localizando as bibliotecas estáticas (.a) para arm64-v8a
-          # O padrão costuma ser prebuilt-with-ssl/android/arm64-v8a/lib/
-          FIND_PATH=$(find curl-android-ios-master -name "libcurl.a" | grep "arm64-v8a" | head -n 1)
+          FIND_PATH=$(find curl-repo -name "libcurl.a" | grep "arm64-v8a" | head -n 1)
           LIB_DIR=$(dirname "$FIND_PATH")
           cp $LIB_DIR/*.a $HOME/imagine-sdk/android-libs/
-          
           # Localizando os includes
-          INCLUDE_PATH=$(find curl-android-ios-master -name "curl" -type d | head -n 1)
-          cp -r $INCLUDE_PATH $HOME/imagine-sdk/include/
-          
+          INCLUDE_PATH=$(find curl-repo -name "curl" -type d | grep "include/curl" | head -n 1)
+          INCLUDE_BASE=$(dirname "$INCLUDE_PATH")
+          cp -r $INCLUDE_BASE/* $HOME/imagine-sdk/include/
           ls -R $HOME/imagine-sdk/android-libs/
 
       - name: Build Imagine SDK

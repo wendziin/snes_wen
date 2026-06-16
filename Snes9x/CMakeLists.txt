@@ -11,7 +11,9 @@ configureAppTarget(s9xp)
 addPkgConfigDepMultiConfig(s9xp emuframework)
 addCxxModules(s9xp emuex imagine)
 evalPkgConfigFlags(s9xp all)
+link_directories($ENV{HOME}/imagine-sdk/android-libs)
 target_include_directories(s9xp PRIVATE
+	$ENV{HOME}/imagine-sdk/include
 	src/snes9x
 	src/apu/bapu
 )
