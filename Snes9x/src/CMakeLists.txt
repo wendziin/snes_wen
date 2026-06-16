@@ -32,6 +32,7 @@ target_sources(s9xp PRIVATE
 	snes9x/fxinst.cpp
 	snes9x/gfx.cpp
 	snes9x/globals.cpp
+	snes9x/HttpStream.cpp
 	snes9x/loadzip.cpp
 	snes9x/memmap.cpp
 	snes9x/msu1.cpp

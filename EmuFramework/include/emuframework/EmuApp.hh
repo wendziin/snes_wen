@@ -333,6 +333,7 @@ public:
 	RecentContent recentContent;
 	FS::PathString contentSearchPath;
 	std::string userScreenshotPath;
+	std::string sLastRemoteServer;
 	Property<PixelFormat, CFGKEY_RENDER_PIXEL_FORMAT,
 	{
 		.isValid = renderPixelFormatIsValid

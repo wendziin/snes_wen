@@ -67,6 +67,20 @@ MainMenuView::MainMenuView(ViewAttachParams attach, bool customMenu):
 			pushAndShow(FilePicker::forLoading(attachParams(), e), e, false);
 		}
 	},
+	remoteServer
+	{
+		"Remote Server", attach,
+		[this](const Input::Event &e)
+		{
+			pushAndShowNewCollectTextInputView(attachParams(), "Server URL", app().sLastRemoteServer,
+				[this](std::string_view val)
+				{
+					app().sLastRemoteServer = val;
+					app().saveSessionOptions();
+					app().handleOpenFileCommand(val.data());
+				}, e);
+		}
+	},
 	systemActions
 	{
 		"System Actions", attach,
@@ -300,6 +314,7 @@ void MainMenuView::onShow()
 void MainMenuView::loadFileBrowserItems()
 {
 	item.emplace_back(&loadGame);
+	item.emplace_back(&remoteServer);
 	item.emplace_back(&recentGames);
 	if(AppMeta::hasBundledGames() && app().showsBundledGames)
 	{

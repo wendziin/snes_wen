@@ -15,6 +15,16 @@ target_include_directories(s9xp PRIVATE
 	src/snes9x
 	src/apu/bapu
 )
-target_compile_definitions(s9xp PRIVATE HAVE_STRINGS_H HAVE_STDINT_H RIGHTSHIFT_IS_SAR ZLIB)
+target_compile_definitions(s9xp PRIVATE HAVE_STRINGS_H HAVE_STDINT_H RIGHTSHIFT_IS_SAR ZLIB USE_CURL)
 target_compile_options(s9xp PRIVATE -Wno-register -Wno-implicit-fallthrough)
+
+# Suporte a libcurl (conforme resumo técnico)
+find_package(CURL)
+if(CURL_FOUND)
+    target_link_libraries(s9xp PRIVATE CURL::libcurl)
+else()
+    # Fallback para busca manual se find_package falhar no NDK
+    target_link_libraries(s9xp PRIVATE curl crypto ssl)
+endif()
+
 add_subdirectory(src)

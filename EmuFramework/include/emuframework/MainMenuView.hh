@@ -47,6 +47,7 @@ public:
 
 protected:
 	TextMenuItem loadGame;
+	TextMenuItem remoteServer;
 	TextMenuItem systemActions;
 	TextMenuItem recentGames;
 	TextMenuItem bundledGames;
