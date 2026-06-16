@@ -18,6 +18,7 @@
 #include <emuframework/FilePicker.hh>
 #include <emuframework/BundledGamesView.hh>
 #include <emuframework/CreditsView.hh>
+#include <emuframework/viewUtils.hh>
 #include "FrameTimingView.hh"
 #include "RecentContentView.hh"
 #include "InputManagerView.hh"
@@ -72,13 +73,18 @@ MainMenuView::MainMenuView(ViewAttachParams attach, bool customMenu):
 		"Remote Server", attach,
 		[this](const Input::Event &e)
 		{
-			pushAndShowNewCollectTextInputView(attachParams(), "Server URL", app().sLastRemoteServer,
-				[this](std::string_view val)
+			pushAndShowNewCollectTextInputView(attachParams(), e, "Server URL", app().sLastRemoteServer.c_str(),
+				[this](CollectTextInputView &view, const char *val) -> bool
 				{
-					app().sLastRemoteServer = val;
-					app().saveSessionOptions();
-					app().handleOpenFileCommand(val.data());
-				}, e);
+					if (val)
+					{
+						app().sLastRemoteServer = val;
+						app().saveSessionOptions();
+						app().handleOpenFileCommand(val);
+					}
+					view.dismiss();
+					return false;
+				});
 		}
 	},
 	systemActions
