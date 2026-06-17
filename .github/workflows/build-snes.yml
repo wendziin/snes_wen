@@ -12,9 +12,16 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout main repo
+        uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: Checkout libcurl-android-ios
+        uses: actions/checkout@v4
+        with:
+          repository: mpx/curl-android-ios
+          path: curl-repo
 
       - name: set up JDK 17
         uses: actions/setup-java@v4
@@ -32,26 +39,28 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y cmake ninja-build pkg-config
 
-      - name: Fetch Pre-compiled libcurl & OpenSSL for Android
+      - name: Prepare libcurl & OpenSSL libs
         run: |
           mkdir -p $HOME/imagine-sdk/android-libs
           mkdir -p $HOME/imagine-sdk/include
-          # Baixando o repositório como tarball (Pula a exigência de login do Git)
-          curl -L https://github.com/mpx/curl-android-ios/archive/refs/heads/master.tar.gz -o curl-repo.tar.gz
-          tar -xzf curl-repo.tar.gz
           
           # Localizando as bibliotecas estáticas (.a) para arm64-v8a
-          # O tar extrai para uma pasta chamada curl-android-ios-master
-          FIND_PATH=$(find curl-android-ios-master -name "libcurl.a" | grep "arm64-v8a" | head -n 1)
+          # No repo mpx/curl-android-ios elas ficam em prebuilt-with-ssl/android/arm64-v8a/lib/
+          FIND_PATH=$(find curl-repo -name "libcurl.a" | grep "arm64-v8a" | head -n 1)
+          if [ -z "$FIND_PATH" ]; then
+            echo "Erro: libcurl.a não encontrada!"
+            exit 1
+          fi
           LIB_DIR=$(dirname "$FIND_PATH")
           cp $LIB_DIR/*.a $HOME/imagine-sdk/android-libs/
           
           # Localizando os includes
-          INCLUDE_PATH=$(find curl-android-ios-master -name "curl" -type d | grep "include/curl" | head -n 1)
+          INCLUDE_PATH=$(find curl-repo -name "curl" -type d | grep "include/curl" | head -n 1)
           INCLUDE_BASE=$(dirname "$INCLUDE_PATH")
           cp -r $INCLUDE_BASE/* $HOME/imagine-sdk/include/
           
-          ls -R $HOME/imagine-sdk/android-libs/
+          echo "Libs preparadas em $HOME/imagine-sdk/android-libs/"
+          ls -l $HOME/imagine-sdk/android-libs/
 
       - name: Build Imagine SDK
         env:
