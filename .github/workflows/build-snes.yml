@@ -37,7 +37,10 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build pkg-config
+          sudo apt-get install -y ninja-build pkg-config
+          # Instalar CMake mais recente (exigido pelo Imagine SDK)
+          wget -qO- https://github.com/Kitware/CMake/releases/download/v4.0.0-rc2/cmake-4.0.0-rc2-linux-x86_64.tar.gz | sudo tar --strip-components=1 -xzC /usr/local
+          cmake --version
 
       - name: Prepare libcurl & OpenSSL libs
         run: |
