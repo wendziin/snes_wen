@@ -21,7 +21,7 @@ add_library(imagine STATIC)
 # --- CORREÇÃO FORÇADA PARA ANDROID NDK LIBC++ ---
 if(ANDROID)
     set_target_properties(imagine PROPERTIES 
-        CXX_STANDARD 20
+        CXX_STANDARD 23
         CXX_STANDARD_REQUIRED ON
     )
     target_include_directories(imagine SYSTEM BEFORE PRIVATE
