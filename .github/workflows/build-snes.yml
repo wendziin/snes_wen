@@ -38,7 +38,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ninja-build pkg-config
-          wget -qO- https://github.com/Kitware/CMake/releases/download/v4.2.0/cmake-4.2.0-linux-x86_64.tar.gz | sudo tar --strip-components=1 -xzC /usr/local
+          # Downgrade para o CMake 3.29.8 para manter compatibilidade com projetos antigos (xz e libarchive)
+          wget -qO- https://github.com/Kitware/CMake/releases/download/v3.29.8/cmake-3.29.8-linux-x86_64.tar.gz | sudo tar --strip-components=1 -xzC /usr/local
 
       - name: Build Dependencies (curl, lzma, archive)
         run: |
