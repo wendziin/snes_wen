@@ -59,19 +59,22 @@ jobs:
           
           echo "PKG_CONFIG_SYSROOT_DIR=${ANDROID_NDK_HOME}/sysroot" >> $GITHUB_ENV
 
-          # Mantemos o ambiente global limpo e apontado para o NDK moderno
+          # Mantemos o ambiente global limpo
           echo "CMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake" >> $GITHUB_ENV
           echo "ANDROID_ABI=arm64-v8a" >> $GITHUB_ENV
           echo "ANDROID_PLATFORM=android-24" >> $GITHUB_ENV
           echo "ANDROID_STL=c++_shared" >> $GITHUB_ENV
           echo "CMAKE_CXX_STANDARD=23" >> $GITHUB_ENV
 
-      - name: Patch Imagine Framework (Force NDK Sysroot)
+      - name: Patch Imagine Framework (Source Code Fixes)
         run: |
           echo "Limpando flags que bloqueiam os headers nativos do Android NDK..."
-          # Encontra todos os arquivos de build e apaga as flags -nostdinc++ e -nostdinc
           find . -type f \( -name "CMakeLists.txt" -o -name "*.cmake" -o -name "*.sh" -o -name "*.mk" \) -exec sed -i 's/-nostdinc++//g' {} +
           find . -type f \( -name "CMakeLists.txt" -o -name "*.cmake" -o -name "*.sh" -o -name "*.mk" \) -exec sed -i 's/-nostdinc//g' {} +
+          
+          echo "Aplicando downgrade de flat_set para set para compatibilidade com o NDK..."
+          sed -i 's/<flat_set>/<set>/g' imagine/include/imagine/util/DelegateFuncSet.hh
+          sed -i 's/std::flat_multiset/std::multiset/g' imagine/include/imagine/util/DelegateFuncSet.hh
 
       - name: Build Imagine SDK
         env:
