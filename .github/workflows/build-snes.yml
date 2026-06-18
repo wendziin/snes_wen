@@ -20,7 +20,7 @@ jobs:
       - name: Checkout libcurl-android-ios
         uses: actions/checkout@v4
         with:
-          repository: mpx/curl-android-ios
+          repository: gustavogenovese/curl-android-ios
           path: curl-repo
 
       - name: set up JDK 17
@@ -45,7 +45,7 @@ jobs:
           mkdir -p $HOME/imagine-sdk/include
           
           # Localizando as bibliotecas estáticas (.a) para arm64-v8a
-          # No repo mpx/curl-android-ios elas ficam em prebuilt-with-ssl/android/arm64-v8a/lib/
+          # No repo gustavogenovese/curl-android-ios elas ficam em prebuilt-with-ssl/android/arm64-v8a/
           FIND_PATH=$(find curl-repo -name "libcurl.a" | grep "arm64-v8a" | head -n 1)
           if [ -z "$FIND_PATH" ]; then
             echo "Erro: libcurl.a não encontrada!"
@@ -55,6 +55,7 @@ jobs:
           cp $LIB_DIR/*.a $HOME/imagine-sdk/android-libs/
           
           # Localizando os includes
+          # No repo gustavogenovese eles ficam em prebuilt-with-ssl/include/
           INCLUDE_PATH=$(find curl-repo -name "curl" -type d | grep "include/curl" | head -n 1)
           INCLUDE_BASE=$(dirname "$INCLUDE_PATH")
           cp -r $INCLUDE_BASE/* $HOME/imagine-sdk/include/
