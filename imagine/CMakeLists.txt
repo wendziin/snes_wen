@@ -15,7 +15,12 @@ endif()
 
 printConfigInfo()
 add_library(imagine STATIC)
-set_target_properties(imagine PROPERTIES CXX_MODULE_STD ON)
+# Correcao Android NDK
+if(NOT ANDROID AND TARGET "__CMAKE::CXX26")
+    set_target_properties(imagine PROPERTIES CXX_MODULE_STD ON)
+else()
+    message(STATUS "Ignorando CXX_MODULE_STD para imagine no Android")
+endif()
 set_target_properties(imagine PROPERTIES OUTPUT_NAME "imagine${GEN_TARGET_EXT}")
 set_property(TARGET imagine PROPERTY C_STANDARD 23)
 target_include_directories(imagine PRIVATE include)
