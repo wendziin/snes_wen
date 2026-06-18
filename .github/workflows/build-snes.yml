@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -37,7 +37,8 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build pkg-config
+          # Instalamos as libs no Ubuntu (caso o SDK precise delas para ferramentas de host durante o build)
+          sudo apt-get install -y ninja-build pkg-config libarchive-dev liblzma-dev
           # Instalar CMake mais recente (exigido pelo Imagine SDK)
           wget -qO- https://github.com/Kitware/CMake/releases/download/v4.2.0/cmake-4.2.0-linux-x86_64.tar.gz | sudo tar --strip-components=1 -xzC /usr/local
 
@@ -64,6 +65,13 @@ jobs:
           
           echo "Libs preparadas em $HOME/imagine-sdk/android-libs/"
           ls -l $HOME/imagine-sdk/android-libs/
+
+          # --- CORREÇÃO DO PKG_CONFIG PARA ANDROID ---
+          # Força o pkg-config a buscar as configurações dentro do NDK do Android
+          export PKG_CONFIG_SYSROOT_DIR="${ANDROID_NDK_HOME}/sysroot"
+          
+          # Passa as variáveis para os próximos passos do GitHub Actions
+          echo "PKG_CONFIG_SYSROOT_DIR=${ANDROID_NDK_HOME}/sysroot" >> $GITHUB_ENV
 
       - name: Build Imagine SDK
         env:
@@ -94,3 +102,4 @@ jobs:
         with:
           name: Snes9x-EX-Plus-Cloud-Edition
           path: Snes9x/build/android/src/main/outputs/apk/release/*.apk
+          
