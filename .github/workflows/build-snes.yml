@@ -59,18 +59,21 @@ jobs:
           
           echo "PKG_CONFIG_SYSROOT_DIR=${ANDROID_NDK_HOME}/sysroot" >> $GITHUB_ENV
 
-          # --- CONFIGURAÇÃO GLOBAL DO CMAKE COM NDK R27 ---
+          # --- CONFIGURAÇÃO NATIVA E COERENTE DO CMAKE COM NDK R27 ---
           echo "CMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake" >> $GITHUB_ENV
           echo "ANDROID_ABI=arm64-v8a" >> $GITHUB_ENV
           echo "ANDROID_PLATFORM=android-24" >> $GITHUB_ENV
+          echo "ANDROID_STL=c++_shared" >> $GITHUB_ENV
+          
+          # Força o CMake globalmente a usar C++20 e C17 de forma nativa
+          echo "CMAKE_CXX_STANDARD=20" >> $GITHUB_ENV
+          echo "CMAKE_CXX_STANDARD_REQUIRED=ON" >> $GITHUB_ENV
+          echo "CMAKE_C_STANDARD=17" >> $GITHUB_ENV
 
       - name: Build Imagine SDK
         env:
           IMAGINE_PATH: ${{ github.workspace }}/imagine
           IMAGINE_SDK_PATH: ${{ github.workspace }}/imagine-sdk
-          CFLAGS: "-std=c17"
-          CXXFLAGS: "-std=c++20 -isystem ${{ env.ANDROID_NDK_HOME }}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1"
-          ANDROID_STL: c++_shared
         run: |
           cd imagine
           ./android.sh install
@@ -79,9 +82,6 @@ jobs:
         env:
           IMAGINE_PATH: ${{ github.workspace }}/imagine
           IMAGINE_SDK_PATH: ${{ github.workspace }}/imagine-sdk
-          CFLAGS: "-std=c17"
-          CXXFLAGS: "-std=c++20 -isystem ${{ env.ANDROID_NDK_HOME }}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1"
-          ANDROID_STL: c++_shared
         run: |
           cd EmuFramework
           ./android.sh install
@@ -90,9 +90,6 @@ jobs:
         env:
           IMAGINE_PATH: ${{ github.workspace }}/imagine
           IMAGINE_SDK_PATH: ${{ github.workspace }}/imagine-sdk
-          CFLAGS: "-std=c17"
-          CXXFLAGS: "-std=c++20 -isystem ${{ env.ANDROID_NDK_HOME }}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1"
-          ANDROID_STL: c++_shared
         run: |
           cd Snes9x
           ./android.sh build
