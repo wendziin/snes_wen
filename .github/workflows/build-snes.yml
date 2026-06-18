@@ -37,13 +37,11 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          # Removidos libarchive-dev e liblzma-dev para forçar o pkg-config a usar apenas as versões nativas do Android
           sudo apt-get install -y ninja-build pkg-config
           wget -qO- https://github.com/Kitware/CMake/releases/download/v4.2.0/cmake-4.2.0-linux-x86_64.tar.gz | sudo tar --strip-components=1 -xzC /usr/local
 
       - name: Build Dependencies (curl, lzma, archive)
         run: |
-          # Corrige o diretório para o local EXATO onde o Imagine SDK vai buscar no workspace
           SDK_DIR="${{ github.workspace }}/imagine-sdk/android-arm64"
           mkdir -p $SDK_DIR/lib/pkgconfig
           mkdir -p $SDK_DIR/include
@@ -57,27 +55,27 @@ jobs:
           cp $(dirname "$FIND_PATH")/*.a $SDK_DIR/lib/
           cp -r $(dirname "$(find curl-repo -name "curl" -type d | grep "include/curl" | head -n 1)")/* $SDK_DIR/include/
           
-          # 2. Compilar liblzma (xz) nativo para Android NDK
-          wget -q https://github.com/tukaani-project/xz/releases/download/v5.4.4/xz-5.4.4.tar.gz
-          tar xzf xz-5.4.4.tar.gz
-          cd xz-5.4.4 && mkdir build && cd build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake \
+          # 2. Compilar liblzma (xz) usando modo seguro do CMake (-S e -B)
+          wget -qO xz.tar.gz https://github.com/tukaani-project/xz/archive/refs/tags/v5.4.4.tar.gz
+          tar xzf xz.tar.gz
+          cmake -S xz-5.4.4 -B xz-5.4.4/build \
+            -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-24 \
             -DCMAKE_INSTALL_PREFIX=$SDK_DIR -DBUILD_SHARED_LIBS=OFF
-          make -j$(nproc) install
-          cd ../..
+          cmake --build xz-5.4.4/build -j$(nproc)
+          cmake --install xz-5.4.4/build
           
-          # 3. Compilar libarchive nativo para Android NDK
-          wget -q https://libarchive.org/downloads/libarchive-3.7.2.tar.gz
-          tar xzf libarchive-3.7.2.tar.gz
-          cd libarchive-3.7.2 && mkdir build && cd build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake \
+          # 3. Compilar libarchive usando modo seguro do CMake (-S e -B)
+          wget -qO libarchive.tar.gz https://github.com/libarchive/libarchive/archive/refs/tags/v3.7.2.tar.gz
+          tar xzf libarchive.tar.gz
+          cmake -S libarchive-3.7.2 -B libarchive-3.7.2/build \
+            -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-24 \
             -DCMAKE_INSTALL_PREFIX=$SDK_DIR -DENABLE_TEST=OFF -DENABLE_TAR=OFF -DENABLE_CPIO=OFF -DENABLE_CAT=OFF
-          make -j$(nproc) install
-          cd ../..
+          cmake --build libarchive-3.7.2/build -j$(nproc)
+          cmake --install libarchive-3.7.2/build
           
-          # 4. Configurar variáveis para que o pkg-config descubra essas bibliotecas automaticamente
+          # 4. Configurar ambiente para o projeto principal
           echo "PKG_CONFIG_PATH=$SDK_DIR/lib/pkgconfig" >> $GITHUB_ENV
           echo "PKG_CONFIG_SYSROOT_DIR=${ANDROID_NDK_HOME}/sysroot" >> $GITHUB_ENV
           echo "CMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake" >> $GITHUB_ENV
