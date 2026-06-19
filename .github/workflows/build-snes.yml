@@ -98,6 +98,8 @@ jobs:
           echo "ANDROID_PLATFORM=android-24" >> $GITHUB_ENV
           echo "ANDROID_STL=c++_shared" >> $GITHUB_ENV
           echo "CMAKE_CXX_STANDARD=23" >> $GITHUB_ENV
+          echo "ANDROID_NDK_PATH=${ANDROID_NDK_HOME}" >> $GITHUB_ENV
+          echo "CXXFLAGS=-D__BIONIC_CTYPE_INLINE=inline -D__BIONIC_STRINGS_INLINE=inline" >> $GITHUB_ENV
 
       - name: Patch Imagine Framework (Source Code Fixes)
         run: |
