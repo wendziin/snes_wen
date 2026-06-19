@@ -66,6 +66,21 @@ jobs:
           cmake --build xz-5.4.4/build -j$(nproc)
           cmake --install xz-5.4.4/build
           
+          # 2.5 Gerar liblzma.pc manualmente (CMake não o gera automaticamente no xz v5.4.4)
+          cat <<EOF > $SDK_DIR/lib/pkgconfig/liblzma.pc
+prefix=$SDK_DIR
+exec_prefix=\${prefix}
+libdir=\${exec_prefix}/lib
+includedir=\${prefix}/include
+
+Name: liblzma
+Description: General purpose data compression library
+URL: https://tukaani.org/xz/
+Version: 5.4.4
+Cflags: -I\${includedir}
+Libs: -L\${libdir} -llzma
+EOF
+          
           # 3. Compilar libarchive usando modo seguro do CMake (-S e -B)
           wget -qO libarchive.tar.gz https://github.com/libarchive/libarchive/archive/refs/tags/v3.7.2.tar.gz
           tar xzf libarchive.tar.gz
