@@ -354,12 +354,7 @@ function(configureAppTarget target)
 	target_include_directories(${target} PRIVATE ${genDir} ${PROJECT_SOURCE_DIR}/src)
 	target_link_options(${target} PRIVATE ${CXX_STD_LINK_OPTS})
 	target_link_libraries(${target} PRIVATE ${CXX_STD_LINK_LIBS})
-# Correcao Android NDK
-if(NOT ANDROID AND TARGET "__CMAKE::CXX26")
-    set_target_properties(${target} PROPERTIES CXX_MODULE_STD ON)
-else()
-    message(STATUS "Ignorando CXX_MODULE_STD para ${target} no Android")
-endif()
+	set_target_properties(${target} PROPERTIES CXX_MODULE_STD ON)
 endfunction()
 
 function(configureAppLibraryTarget target)

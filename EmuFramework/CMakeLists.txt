@@ -11,12 +11,7 @@ set(CMAKE_INSTALL_PREFIX "${IMAGINE_SDK_PLATFORM_PATH}" CACHE PATH "Installation
 
 printConfigInfo()
 add_library(emuframework STATIC)
-# Correcao Android NDK
-if(NOT ANDROID AND TARGET "__CMAKE::CXX26")
-    set_target_properties(emuframework PROPERTIES CXX_MODULE_STD ON)
-else()
-    message(STATUS "Ignorando CXX_MODULE_STD para emuframework no Android")
-endif()
+set_target_properties(emuframework PROPERTIES CXX_MODULE_STD ON)
 set_target_properties(emuframework PROPERTIES OUTPUT_NAME "emuframework${GEN_TARGET_EXT}")
 target_include_directories(emuframework PRIVATE include)
 target_compile_options(emuframework PRIVATE -Werror)
@@ -29,12 +24,7 @@ evalPkgConfigCFlags(emuframework)
 writePkgConfigFiles(emuframework)
 
 add_library(mednafen_common STATIC)
-# Correcao Android NDK
-if(NOT ANDROID AND TARGET "__CMAKE::CXX26")
-    set_target_properties(mednafen_common PROPERTIES CXX_MODULE_STD ON)
-else()
-    message(STATUS "Ignorando CXX_MODULE_STD para mednafen_common no Android")
-endif()
+set_target_properties(mednafen_common PROPERTIES CXX_MODULE_STD ON)
 set_target_properties(mednafen_common PROPERTIES OUTPUT_NAME "mednafen_common${GEN_TARGET_EXT}")
 target_include_directories(mednafen_common PRIVATE
 	include/shared/mednafen

@@ -30,12 +30,7 @@ if(ANDROID)
     target_link_libraries(imagine PRIVATE c++)
 endif()
 
-# Evita o erro do CXX_MODULE_STD no Android
-if(NOT ANDROID AND TARGET "__CMAKE::CXX26")
-    set_target_properties(imagine PROPERTIES CXX_MODULE_STD ON)
-else()
-    message(STATUS "Ignorando CXX_MODULE_STD para imagine no Android")
-endif()
+set_target_properties(imagine PROPERTIES CXX_MODULE_STD ON)
 
 set_target_properties(imagine PROPERTIES OUTPUT_NAME "imagine${GEN_TARGET_EXT}")
 set_property(TARGET imagine PROPERTY C_STANDARD 23)

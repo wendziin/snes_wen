@@ -38,8 +38,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ninja-build pkg-config
-          # Downgrade para o CMake 3.29.8 para manter compatibilidade com projetos antigos (xz e libarchive)
-          wget -qO- https://github.com/Kitware/CMake/releases/download/v3.29.8/cmake-3.29.8-linux-x86_64.tar.gz | sudo tar --strip-components=1 -xzC /usr/local
+          # Usar o CMake 4.2.0 para suportar C++ Modules nativamente
+          wget -qO- https://github.com/Kitware/CMake/releases/download/v4.2.0/cmake-4.2.0-linux-x86_64.tar.gz | sudo tar --strip-components=1 -xzC /usr/local
 
       - name: Build Dependencies (curl, lzma, archive)
         run: |
@@ -62,7 +62,8 @@ jobs:
           cmake -S xz-5.4.4 -B xz-5.4.4/build \
             -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-24 \
-            -DCMAKE_INSTALL_PREFIX=$SDK_DIR -DBUILD_SHARED_LIBS=OFF
+            -DCMAKE_INSTALL_PREFIX=$SDK_DIR -DBUILD_SHARED_LIBS=OFF \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5
           cmake --build xz-5.4.4/build -j$(nproc)
           cmake --install xz-5.4.4/build
           
@@ -85,7 +86,8 @@ jobs:
           cmake -S libarchive-3.7.2 -B libarchive-3.7.2/build \
             -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-24 \
-            -DCMAKE_INSTALL_PREFIX=$SDK_DIR -DENABLE_TEST=OFF -DENABLE_TAR=OFF -DENABLE_CPIO=OFF -DENABLE_CAT=OFF
+            -DCMAKE_INSTALL_PREFIX=$SDK_DIR -DENABLE_TEST=OFF -DENABLE_TAR=OFF -DENABLE_CPIO=OFF -DENABLE_CAT=OFF \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5
           cmake --build libarchive-3.7.2/build -j$(nproc)
           cmake --install libarchive-3.7.2/build
           
