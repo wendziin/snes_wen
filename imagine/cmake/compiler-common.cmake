@@ -21,6 +21,7 @@ if(USE_EXTERNAL_LIBCXX)
 	set(CXX_STD_LINK_OPTS -nostdlib++)
 	set(CXX_STD_LINK_LIBS -lc++ -lc++abi -lc++experimental ${LIBCXX_SUPPORT_LIBS})
 	string(APPEND CXXFLAGS " -nostdinc++ -isystem ${IMAGINE_SDK_PLATFORM_PATH}/include/c++/v1")
+	set(CMAKE_CXX_STANDARD_LIBRARY "libc++")
 	set(CMAKE_CXX_COMPILER_ID_ARG1 -B "${IMAGINE_SDK_PLATFORM_PATH}/lib") # used to locate libc++.modules.json in Clang-CXX-CXXImportStd.cmake
 endif()
 
